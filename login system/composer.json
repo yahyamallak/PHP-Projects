@@ -1,0 +1,13 @@
+{
+  "require": {
+    "google/apiclient": "^2.17",
+    "yahyamallak/auth": "dev-master"
+  },
+  "scripts": {
+    "serve": "php -S localhost:8080 -t public",
+    "publish-migrations": "Yahya\\Auth\\Installer::postInstall"
+  },
+  "config": {
+    "process-timeout": 0
+  }
+}
