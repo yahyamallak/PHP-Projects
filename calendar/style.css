@@ -1,0 +1,36 @@
+td.today {
+    background-color: #eee;
+    color: black;
+}
+
+.low-opacity {
+    opacity: .5;
+}
+
+
+.calendar-header .time{
+    font-size: 4rem;
+    margin: 0;
+}
+
+.calendar-header .date{
+    margin: 0;
+    color:deepskyblue;
+}
+
+.sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.sub-header .arrows {
+    display: flex;
+    gap: 2rem;
+}
+
+.sub-header .arrows i {
+    font-size: 2rem;
+    cursor: pointer;
+}
