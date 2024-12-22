@@ -1,0 +1,220 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    max-width:none;
+}
+
+body.overlay::before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .5);
+    z-index: 1;
+}
+
+.container {
+    display: flex;
+}
+
+.image-profile {
+    width: 50px;
+    border-radius: 50%;
+    margin-top: 1rem;
+    justify-self: center;
+}
+
+.image-profile img {
+    width: 100%;
+    border-radius: 50%;
+}
+
+
+/* Sidebar */
+
+nav.sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    flex-basis: 200px;
+    background-color: #0c151c;
+}
+
+nav.sidebar h1 {
+    text-align: center;
+}
+
+nav.sidebar ul a{
+    color: white;
+}
+
+nav.sidebar ul li {
+    padding: 1rem;
+}
+
+nav.sidebar ul li:hover {
+    background-color: white;
+    color: #0c151c;
+}
+
+nav.sidebar form {
+    text-align: center;
+}
+
+main.body {
+    flex: 1;
+    padding: 1rem;
+    overflow: hidden;
+}
+
+.statistics {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.statistics .card {
+    background-color: #0c151c;
+    border-radius: 10px;
+    width: 145px;
+    text-align: center;
+    padding: 10px;
+}
+
+
+/* Patients - Doctors */
+
+.patients-table,
+.doctors-table,
+.appointments-table,
+.medical-records-table
+.prescriptions-table,
+.payments-table {
+    overflow-x: auto;
+}
+
+table {
+    min-width: 1000px;
+}
+
+table thead th {
+    cursor: pointer;
+}
+
+table thead th span {
+    margin-right: 10px;
+    font-size: 13px;
+}
+
+table td {
+    font-size: 13px;
+}
+
+.pagination {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 2rem;
+}
+
+.pagination ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.pagination ul a {
+    text-decoration: none;
+}
+
+.pagination ul li {
+    background-color: #0c151c;
+    padding: 1rem;
+    border-radius: .5rem;
+    color: white;
+    transition: transform .2s ease;
+}
+
+.pagination ul li:hover {
+    transform: translateY(-10px);
+}
+
+.patients-add,
+.doctors-add,
+.appointments-add,
+.medical-records-add {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-patient form,
+.search-doctor form,
+.search-appointment form,
+.search-medical-record form {
+    display: flex;
+}
+
+.patients-add .add-patient-popup,
+.doctors-add .add-doctor-popup,
+.appointments-add .add-appointment-popup,
+.medical-records-add .add-medical-record-popup,
+.delete-patient-popup,
+.delete-doctor-popup,
+.delete-appointment-popup,
+.delete-medical-record-popup {
+    display: none;
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -35%);
+    background-color: #202b38;
+    padding: 1rem;
+    box-shadow: 0px 8px 10px rgba(0, 0, 0, .5);
+    width: 300px;
+    z-index: 2;
+}
+
+.delete-patient-popup,
+.delete-doctor-popup,
+.delete-appointment-popup,
+.delete-medical-record-popup {
+    width: fit-content;
+    text-align: center;
+}
+
+.delete-patient-popup button.delete,
+.delete-doctor-popup button.delete,
+.delete-appointment-popup button.delete,
+.delete-medical-record-popup button.delete {
+    background-color: #e15f41;
+    transition: backgroundColor .2s ease-in;
+}
+
+.delete-patient-popup button.delete:hover,
+.delete-doctor-popup button.delete:hover,
+.delete-appointment-popup button.delete:hover,
+.delete-medical-record-popup button.delete:hover {
+    background-color: rgb(250, 66, 66);
+}
+
+.patients-add .add-patient-popup.show,
+.doctors-add .add-doctor-popup.show,
+.appointments-add .add-appointment-popup.show,
+.medical-records-add .add-medical-record-popup.show,
+.delete-patient-popup.show,
+.delete-doctor-popup.show,
+.delete-appointment-popup.show,
+.delete-medical-record-popup.show  {
+    display: block;
+}

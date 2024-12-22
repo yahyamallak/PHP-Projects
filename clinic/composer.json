@@ -1,0 +1,11 @@
+{
+    "require": {
+        "yahyamallak/masar": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clinic\\": "App/"
+        }
+    }
+    
+}
