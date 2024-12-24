@@ -5,6 +5,8 @@ require_once dirname(__DIR__) . "/vendor/autoload.php";
 use Clinic\Controllers\AppointmentController;
 use Clinic\Controllers\DashboardController;
 use Clinic\Controllers\DoctorController;
+use Clinic\Controllers\HomeController;
+use Clinic\Controllers\LoginController;
 use Clinic\Controllers\MedicalRecordController;
 use Clinic\Controllers\PatientController;
 use Masar\Exceptions\NotFoundException;
@@ -20,9 +22,9 @@ $config = [
 
 $router = new Router($config);
 
-$router->get('/', function() {
-    require_once __DIR__ . "/../pages/home.php";
-});
+$router->get('/', [LoginController::class, 'index']);
+
+$router->get('/home', [HomeController::class, 'index']);
 
 $router->get('/dashboard', [DashboardController::class,'index']);
 

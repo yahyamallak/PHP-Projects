@@ -238,6 +238,10 @@ class Appointment extends Model{
 
     }
 
+    public function delete($id) {
+        return $this->remove("$this->table.id", $id);
+    }
+
     public function search($search, $number, $offset, $sort) {
         $this->search = true;
         $words = explode(" ", $search);

@@ -105,6 +105,14 @@ class AppointmentController {
 
 
     public function delete($id) {
+        $appointment = new Appointment();
+        $appointmentInfo = $appointment->find($id);
 
+        if(!empty($appointmentInfo)) {
+            $appointment->delete($id);
+        }
+
+        header("Location: /appointments");
+        exit;
     }
 }
