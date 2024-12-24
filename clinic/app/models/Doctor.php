@@ -2,6 +2,8 @@
 
 namespace Clinic\Models;
 
+use PDO;
+
 class Doctor extends Model{
 
     protected $table = "doctors";
@@ -129,6 +131,22 @@ class Doctor extends Model{
         $this->search = true;
         $words = explode(" ", $search);
         $this->doctors = $this->searchWordsJoin("users.id", "$this->table.doctor_id", $words, $number, $offset, $sort);
+    }
+
+
+    public function loadDoctors($page, $number) {
+
+        $offset = ($page - 1) * $number;
+
+        $sql = "SELECT * FROM users
+                JOIN doctors
+                ON users.id = doctors.doctor_id
+                LIMIT $number OFFSET $offset";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }

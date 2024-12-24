@@ -40,6 +40,8 @@ $router->get('/doctors/edit/{id}', [DoctorController::class,'editPage']);
 $router->post('/doctors/edit/{id}', [DoctorController::class,'edit']);
 $router->post('/doctors/delete/{id}', [DoctorController::class,'delete']);
 
+$router->post('/getDoctors', [HomeController::class,'getDoctors']);
+
 $router->get('/appointments', [AppointmentController::class,'index']);
 $router->post('/appointments', [AppointmentController::class,'add']);
 $router->get('/appointments/edit/{id}', [AppointmentController::class,'editPage']);
