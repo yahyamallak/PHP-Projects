@@ -48,7 +48,6 @@ class Doctor extends Model{
             $doctorsNumber = count($this->searchWords("users.id", "$this->table.doctor_id", $words));
         }
 
-
         if(empty($this->doctors) && !$this->search) {
             $this->doctors = $this->joinPaginate("users.id","$this->table.doctor_id", $number, $offset, [$sort, $sortType]);
             $doctorsNumber = $this->getDoctors(true);

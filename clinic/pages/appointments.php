@@ -45,12 +45,37 @@
     <div class="appointments-table">
         <table>
             <thead>
+            <?php  
+
+                $caretId = $caretPatient = $caretDoctor = $caretAppointmentDate = $caretStatus = 'fa-caret-down';
+
+                if(array_key_exists("id", $sorting)) {
+                    $caretId = $sorting["id"] == 'asc' ? 'fa-caret-up': 'fa-caret-down';
+                }
+
+                if(array_key_exists("patient", $sorting)) {
+                    $caretPatient = $sorting["patient"] == 'asc' ? 'fa-caret-up': 'fa-caret-down';
+                }
+
+                if(array_key_exists("doctor", $sorting)) {
+                    $caretDoctor = $sorting["doctor"] == 'asc' ? 'fa-caret-up': 'fa-caret-down';
+                }
+
+                if(array_key_exists("appointment_date", $sorting)) {
+                    $caretAppointmentDate = $sorting["appointment_date"] == 'asc' ? 'fa-caret-up': 'fa-caret-down';
+                }
+
+                if(array_key_exists("status", $sorting)) {
+                    $caretStatus = $sorting["status"] == 'asc' ? 'fa-caret-up': 'fa-caret-down';
+                }
+
+                ?>
                 <tr>
-                    <th><span>ID</span><i class="fa-solid fa-caret-up"></i></th>
-                    <th><span>Patient</span><i class="fa-solid fa-caret-up"></i></th>
-                    <th><span>Doctor</span><i class="fa-solid fa-caret-up"></i></th>
-                    <th><span>Appointment date</span><i class="fa-solid fa-caret-up"></i></th>
-                    <th><span>Status</span><i class="fa-solid fa-caret-up"></i></th>
+                    <th data-sort="1"><span>ID</span><i class="fa-solid <?= $caretId ?>"></i></th>
+                    <th data-sort="2"><span>Patient</span><i class="fa-solid <?= $caretPatient ?>"></i></th>
+                    <th data-sort="3"><span>Doctor</span><i class="fa-solid <?= $caretDoctor ?>"></i></th>
+                    <th data-sort="4"><span>Appointment date</span><i class="fa-solid <?= $caretAppointmentDate ?>"></i></th>
+                    <th data-sort="5"><span>Status</span><i class="fa-solid <?= $caretStatus ?>"></i></th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -63,17 +88,17 @@
                     <td><?= $appointment["appointment_date"]?></td>
                     <td><?= $appointment["status"]?></td>
                     <td>
-                        <a href="/patients/edit/<?= $patient["patient_id"]?>">
+                        <a href="/appointments/edit/<?= $appointment["id"]?>">
                            <button>
                                <i class="fa-solid fa-pen-to-square"></i>
                            </button> 
                         </a>
-                        <button class="delete-appointment" data-id="<?= $patient["patient_id"]?>">
+                        <button class="delete-appointment" data-id="<?= $appointment["id"]?>">
                             <i class="fa-solid fa-trash"></i>
                         </button>
-                        <div class="delete-appointment-popup delete-appointment-popup-<?= $patient["patient_id"]?>">
+                        <div class="delete-appointment-popup delete-appointment-popup-<?= $appointment["id"]?>">
                             <h3>Are you sure you want to delete this appointment?</h3>
-                            <form action="/patients/delete/<?= $patient["patient_id"]?>" method="post">
+                            <form action="/appointments/delete/<?= $appointment["id"]?>" method="post">
                                 <button type="button" class="cancel-delete-appointment">Cancel</button>
                                 <button class="delete" type="submit">
                                     <i class="fa-solid fa-trash"></i>

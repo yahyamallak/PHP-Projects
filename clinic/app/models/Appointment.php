@@ -2,6 +2,8 @@
 
 namespace Clinic\Models;
 
+use PDO;
+
 class Appointment extends Model{
 
     protected $table = "appointments";
@@ -10,8 +12,27 @@ class Appointment extends Model{
 
     protected $search = false;
 
+    protected $sort = ["a.id", "patient", "doctor", "a.appointment_date", "a.status"];
+
     public function add($data){
         return $this->insert($this->table, $data);
+    }
+
+    public function edit($data, $id) {
+        $data["id"] = $id;
+        return $this->update("$this->table.id", $data);
+    }
+
+    public function find( $id ) {
+        $sql = "SELECT a.id, u.name AS patient, a.patient_id, us.name AS doctor, a.doctor_id, a.appointment_date, a.`status` FROM appointments a 
+            JOIN users u ON a.patient_id = u.id
+            JOIN users us ON a.doctor_id = us.id
+            WHERE a.id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(":id", $id);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getAppointmentsNumber() {
@@ -33,11 +54,19 @@ class Appointment extends Model{
     }
 
 
-    public function getAppointmentsPaginate($number, $offset) {
+    public function getAppointmentsPaginate($number, $offset, $sortArray) {
         $sql = "SELECT a.id, u.name AS patient, us.name AS doctor, a.appointment_date, a.`status` FROM appointments a 
             JOIN users u ON a.patient_id = u.id
-            JOIN users us ON a.doctor_id = us.id
-            LIMIT :num OFFSET :offs";
+            JOIN users us ON a.doctor_id = us.id";
+
+        if($sortArray[0] != null && $sortArray[1] != null) {
+            $sort = $sortArray[0];
+            $sortType = $sortArray[1];
+
+            $sql .= " ORDER BY $sort $sortType";
+        }
+
+        $sql .= " LIMIT :num OFFSET :offs";
         
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(":num", (int)$number, \PDO::PARAM_INT);
@@ -48,21 +77,34 @@ class Appointment extends Model{
     }
 
     public function paginate($number) {
-
-        if(isset($_GET['search'])) {
-            $search = $_GET['search'];
-            $this->search($search);
-        }
         
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $search = '';
+        $sort = 'a.id';
+        $sortType = 'asc';
+        $offset = ($page - 1) * $number;
 
-        if(empty($this->appointments) && !$this->search) {
-            $offset = ($page - 1) * $number;
-            $this->appointments = $this->getAppointmentsPaginate($number, $offset);
+        if(isset($_GET['sort']) && !empty($_GET['sort'])) {
+            $sort = $this->sort[$_GET['sort'] - 1];
+        }
+
+        if(isset($_GET['sortType']) && !empty($_GET['sortType'])) {
+            $sortType = $_GET['sortType'];
+        }
+
+        if(isset($_GET['search']) && !empty($_GET['search'])) {
+            $search = $_GET['search'];
+            $words = explode(" ", $search);
+            $this->search($search, $number, $offset, [$sort, $sortType]);
+            $appointmentsNumber = $this->searchAppointmentsNumber($words);
+        }
+
+        if(empty($this->doctors) && !$this->search) {
+            $this->appointments = $this->getAppointmentsPaginate($number, $offset, [$sort, $sortType]);
+            $appointmentsNumber = $this->getAppointmentsNumber();
         }
         
         $appointments = $this->appointments;
-        $appointmentsNumber = $this->getAppointmentsNumber();
         $totalPages = ceil($appointmentsNumber / $number);
 
         $pagination = [];
@@ -90,50 +132,104 @@ class Appointment extends Model{
         $start = ($page - $range - $toAddLast) <= 1 ? 2 : $page - $range - $toAddLast;
         $end = ($page + $range + $toAddBegin) >= $totalPages ? $totalPages - 1 : $page + $range + $toAddBegin;
         
-        $pagination[] = "<a href='?page=1'><li>1</li></a>";
+        $pagination[] = "<a href='?page=1". ($this->search ? "&search=$search": "") ."'><li>1</li></a>";
 
         if(($k = $start - $range) >= 1) {
             $k = ($k == 1) ? $k + 1 : $k;
-            $pagination[] = "<a href='?page=$k'><li>...</li></a>";;
+            $pagination[] = "<a href='?page=$k". ($this->search ? "&search=$search": "") ."'><li>...</li></a>";;
         }
 
         for ($i = $start; $i <= $end; $i++) {
-            $pagination[] = "<a href='?page=$i'><li>$i</li></a>";;
+            $pagination[] = "<a href='?page=$i". ($this->search ? "&search=$search": "") ."'><li>$i</li></a>";;
         }
 
         if(($j = $end + $range) < $totalPages) {
-            $pagination[] = "<a href='?page=$j'><li>...</li></a>";;
+            $pagination[] = "<a href='?page=$j". ($this->search ? "&search=$search": "") ."'><li>...</li></a>";;
         }
 
         if($totalPages > 1) {
-            $pagination[] = "<a href='?page=$totalPages'><li>$totalPages</li></a>";;
+            $pagination[] = "<a href='?page=$totalPages". ($this->search ? "&search=$search": "") ."'><li>$totalPages</li></a>";;
         }
 
+        
+        if(str_contains($sort, ".")) {
+            [$table, $sortColumn] = explode(".", $sort);
+        } else {
+            $sortColumn = $sort;
+        }
 
         $paginationData = [
             "appointments"=> $appointments,
-            "pagination" => $pagination
+            "pagination" => $pagination,
+            "sorting" => ["$sortColumn"=> $sortType]
         ];
 
         return $paginationData;
     }
 
-    private function searchAppointments($words) {
+    private function searchAppointmentsNumber($words) {
         
         $sql = "SELECT a.id, u.name AS patient, us.name AS doctor, a.appointment_date, a.`status` FROM appointments a 
             JOIN users u ON a.patient_id = u.id
             JOIN users us ON a.doctor_id = us.id WHERE ";
 
         foreach ($words as $key => $word) {
-            $likeClause[] = "u.name LIKE :search".$key+1;
+            $likeClause[] = "u.name LIKE :searchPatient".$key+1;
+            $likeClause[] = "us.name LIKE :searchDoctor".$key+1;
+            $likeClause[] = "a.appointment_date LIKE :searchAppointmentDate".$key+1;
+            $likeClause[] = "a.status LIKE :searchStatus".$key+1;
         }
 
         $sql .= implode(" OR ", $likeClause);
 
+
         $stmt = $this->db->prepare($sql);
 
         foreach ($words as $key => $word) {
-            $stmt->bindValue(":search".$key+1, "%$word%");
+            $stmt->bindValue(":searchPatient".$key+1, "%$word%");
+            $stmt->bindValue(":searchDoctor".$key+1, "%$word%");
+            $stmt->bindValue(":searchAppointmentDate".$key+1, "%$word%");
+            $stmt->bindValue(":searchStatus".$key+1, "%$word%");
+        }
+
+        $stmt->execute();
+
+        return $stmt->rowCount();
+
+    }
+
+    private function searchAppointments($words, $number, $offset, $sortArray) {
+        
+        $sql = "SELECT a.id, u.name AS patient, us.name AS doctor, a.appointment_date, a.`status` FROM appointments a 
+            JOIN users u ON a.patient_id = u.id
+            JOIN users us ON a.doctor_id = us.id WHERE ";
+
+        foreach ($words as $key => $word) {
+            $likeClause[] = "u.name LIKE :searchPatient".$key+1;
+            $likeClause[] = "us.name LIKE :searchDoctor".$key+1;
+            $likeClause[] = "a.appointment_date LIKE :searchAppointmentDate".$key+1;
+            $likeClause[] = "a.status LIKE :searchStatus".$key+1;
+        }
+
+        $sql .= implode(" OR ", $likeClause);
+
+        if($sortArray[0] != null && $sortArray[1] != null) {
+            $sort = $sortArray[0];
+            $sortType = $sortArray[1];
+
+            $sql .= " ORDER BY $sort $sortType";
+        }
+
+        $sql .= " LIMIT $number OFFSET $offset";
+
+
+        $stmt = $this->db->prepare($sql);
+
+        foreach ($words as $key => $word) {
+            $stmt->bindValue(":searchPatient".$key+1, "%$word%");
+            $stmt->bindValue(":searchDoctor".$key+1, "%$word%");
+            $stmt->bindValue(":searchAppointmentDate".$key+1, "%$word%");
+            $stmt->bindValue(":searchStatus".$key+1, "%$word%");
         }
 
         $stmt->execute();
@@ -142,9 +238,9 @@ class Appointment extends Model{
 
     }
 
-    public function search($search) {
+    public function search($search, $number, $offset, $sort) {
         $this->search = true;
         $words = explode(" ", $search);
-        $this->appointments = $this->searchAppointments($words); 
+        $this->appointments = $this->searchAppointments($words, $number, $offset, $sort); 
     }
 }

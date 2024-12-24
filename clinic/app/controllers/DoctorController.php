@@ -51,6 +51,11 @@ class DoctorController {
 
         $doctorData = $doctor->find($id);
 
+        if(empty($doctorData)) {
+            header("Location: /doctors");
+            exit;
+        }
+
         $doctorInfo = $doctorData[0];
 
         require_once __DIR__."/../../pages/editDoctor.php";
@@ -65,7 +70,7 @@ class DoctorController {
     
         $doctorData = $doctor->find($id);
         
-        if($doctorData) {
+        if(!empty($doctorData)) {
 
             $userData = [
                 "name" => $_POST["name"],
@@ -83,10 +88,14 @@ class DoctorController {
             ];
 
             $doctor->edit($dataDoctor, $id);
+            
+            header("Location: /doctors/edit/$id");
+            exit;
         }
 
-        header("Location: /doctors/edit/$id");
+        header("Location: /doctors");
         exit;
+
     }
 
 

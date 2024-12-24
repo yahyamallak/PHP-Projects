@@ -52,6 +52,11 @@ class PatientController {
 
         $patientData = $patient->find($id);
 
+        if(empty($patientData)) {
+            header("Location: /patients");
+            exit;
+        }
+
         $patientInfo = $patientData[0];
 
         require_once __DIR__."/../../pages/editPatient.php";
@@ -65,7 +70,7 @@ class PatientController {
     
         $patientData = $patient->find($id);
         
-        if($patientData) {
+        if(!empty($patientData)) {
 
             $userData = [
                 "name" => $_POST["name"],
@@ -83,9 +88,12 @@ class PatientController {
             ];
 
             $patient->edit($dataPatient, $id);
+            
+            header("Location: /patients/edit/$id");
+            exit;
         }
 
-        header("Location: /patients/edit/$id");
+        header("Location: /patients");
         exit;
     }
 
