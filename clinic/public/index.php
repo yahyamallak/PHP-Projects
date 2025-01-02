@@ -41,6 +41,8 @@ $router->post('/doctors/edit/{id}', [DoctorController::class,'edit']);
 $router->post('/doctors/delete/{id}', [DoctorController::class,'delete']);
 
 $router->post('/getDoctors', [HomeController::class,'getDoctors']);
+$router->get('/searchDoctors', [HomeController::class,'searchDoctors']);
+$router->post('/bookDoctor', [HomeController::class,'bookDoctor']);
 
 $router->get('/appointments', [AppointmentController::class,'index']);
 $router->post('/appointments', [AppointmentController::class,'add']);

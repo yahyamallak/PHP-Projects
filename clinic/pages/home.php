@@ -5,11 +5,13 @@
 
 <main>
     <div class="search">
-        <input type="search" placeholder="Search doctor...">
-        <select name="" id="">
-            <option value="">Specialization</option>
+        <input id="search-doctors" type="search" placeholder="Search doctor...">
+        <select id="specializations">
+            <option>Choose specialization</option>
+            <?php foreach($specializations as $specialization): ?>
+            <option><?= $specialization ?></option>
+            <?php endforeach ?>
         </select>
-        <button>Search</button>
     </div>
     <div class="doctors">
         <?php foreach($doctors as $doctor): ?>

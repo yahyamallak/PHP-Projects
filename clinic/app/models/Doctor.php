@@ -133,20 +133,50 @@ class Doctor extends Model{
         $this->doctors = $this->searchWordsJoin("users.id", "$this->table.doctor_id", $words, $number, $offset, $sort);
     }
 
-
-    public function loadDoctors($page, $number) {
+    public function loadDoctors($page, $number, $searches = []) {
 
         $offset = ($page - 1) * $number;
 
         $sql = "SELECT * FROM users
                 JOIN doctors
-                ON users.id = doctors.doctor_id
-                LIMIT $number OFFSET $offset";
+                ON users.id = doctors.doctor_id";
+
+        if(!empty($searches)) {
+
+            $sql .= " WHERE ";
+
+            $likeClauses = [];
+
+            foreach($searches as $key => $search) {
+                $likeClauses[] = "name LIKE :name". ($key+1);
+                $likeClauses[] = "specialization LIKE :specialization". ($key+1);
+            }
+
+            $sql .= implode(" OR ", $likeClauses);
+        }
+
+        $sql .= " LIMIT $number OFFSET $offset";
 
         $stmt = $this->db->prepare($sql);
+
+        if(!empty($searches)) {
+
+            foreach($searches as $key => $search) {
+                $stmt->bindValue(":name".($key+1), "%$search%");
+                $stmt->bindValue(":specialization". ($key+1), "%$search%");
+            }
+        }
+
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getSpecializations() {
+        $sql = "SELECT DISTINCT specialization FROM $this->table";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
 }
