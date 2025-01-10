@@ -80,34 +80,43 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($appointments as $appointment): ?>
-                <tr>
-                    <td><?= $appointment["id"]?></td>
-                    <td><?= $appointment["patient"]?></td>
-                    <td><?= $appointment["doctor"]?></td>
-                    <td><?= $appointment["appointment_date"]?></td>
-                    <td><?= $appointment["status"]?></td>
-                    <td>
-                        <a href="/appointments/edit/<?= $appointment["id"]?>">
-                           <button>
-                               <i class="fa-solid fa-pen-to-square"></i>
-                           </button> 
-                        </a>
-                        <button class="delete-appointment" data-id="<?= $appointment["id"]?>">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                        <div class="delete-appointment-popup delete-appointment-popup-<?= $appointment["id"]?>">
-                            <h3>Are you sure you want to delete this appointment?</h3>
-                            <form action="/appointments/delete/<?= $appointment["id"]?>" method="post">
-                                <button type="button" class="cancel-delete-appointment">Cancel</button>
-                                <button class="delete" type="submit">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <?php endforeach ?>
+                <?php if(!empty($appointments)): ?>
+                    <?php foreach($appointments as $appointment): ?>
+                    <tr>
+                        <td><?= $appointment["id"]?></td>
+                        <td><?= $appointment["patient"]?></td>
+                        <td><?= $appointment["doctor"]?></td>
+                        <td><?= $appointment["appointment_date"]?></td>
+                        <td><?= $appointment["status"]?></td>
+                        <td>
+                            <a href="/medical_records/<?= $appointment["id"]?>">
+                                <button><i class="fa-solid fa-file-medical"></i></button>
+                            </a>
+                            <a href="/appointments/edit/<?= $appointment["id"]?>">
+                            <button>
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button> 
+                            </a>
+                            <button class="delete-appointment" data-id="<?= $appointment["id"]?>">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                            <div class="delete-appointment-popup delete-appointment-popup-<?= $appointment["id"]?>">
+                                <h3>Are you sure you want to delete this appointment?</h3>
+                                <form action="/appointments/delete/<?= $appointment["id"]?>" method="post">
+                                    <button type="button" class="cancel-delete-appointment">Cancel</button>
+                                    <button class="delete" type="submit">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach ?>
+                <?php else: ?>
+                    <tr>
+                        <td style="text-align: center;" colspan="10">No results found.</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

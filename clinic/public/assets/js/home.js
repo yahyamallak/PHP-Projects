@@ -8,7 +8,7 @@ document.addEventListener("click", function(e) {
         popup.classList.remove("show")
     })
 
-    if(target.classList.contains('book-doctor-btn')) {
+    if(target.classList.contains('book-doctor-btn') || target.closest('.book-doctor')) {
         popup.classList.add("show")
     }
     

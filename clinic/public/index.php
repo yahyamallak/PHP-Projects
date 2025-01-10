@@ -52,7 +52,8 @@ $router->post('/appointments/delete/{id}', [AppointmentController::class,'delete
 
 
 $router->get('/medical_records', [MedicalRecordController::class,'index']);
-$router->post('/medical_records', [MedicalRecordController::class,'add']);
+$router->get('/medical_records/{id}', [MedicalRecordController::class,'viewMedicalRecord']);
+$router->post('/medical_records/{id}', [MedicalRecordController::class,'add']);
 
 
 $router->get('/prescriptions', function() {

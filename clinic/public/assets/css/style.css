@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+button {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -217,4 +222,16 @@ table td {
 .delete-appointment-popup.show,
 .delete-medical-record-popup.show  {
     display: block;
+}
+
+/* Medical records */
+
+section.medical_record {
+    padding: 2rem;
+    flex: 1;
+}
+
+.medical_record_details {
+    display: flex;
+    justify-content: space-around;
 }
