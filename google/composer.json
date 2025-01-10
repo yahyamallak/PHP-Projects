@@ -1,0 +1,16 @@
+{
+    "name": "yahya/google",
+    "autoload": {
+        "psr-4": {
+            "Google\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "yahya mallak"
+        }
+    ],
+    "require": {
+        "yahyamallak/masar": "^1.1"
+    }
+}
